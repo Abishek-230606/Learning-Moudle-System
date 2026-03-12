@@ -165,6 +165,8 @@ ALTER TABLE Project_Submission
 ADD CONSTRAINT unique_submission
 UNIQUE(user_id,module_id);
 
+
+-- Trigger option (cirtificates automattically treiggers)
 DELIMITER $$
 
 CREATE TRIGGER generate_certificate
