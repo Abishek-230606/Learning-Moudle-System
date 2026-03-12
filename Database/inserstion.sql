@@ -241,4 +241,41 @@ FROM Certificate
 JOIN User ON Certificate.user_id = User.user_id
 JOIN Course ON Certificate.course_id = Course.course_id;
 
---  code it
+-- insertion of remaining videos
+
+INSERT INTO Video (module_id,video_title,video_url,duration_minutes)
+VALUES
+-- Frontend course
+(25,'HTML Basics','https://www.youtube.com/watch?v=pQN-pnXPaVg',20),
+(26,'CSS Fundamentals','https://www.youtube.com/watch?v=OXGznpKZ_sA',18),
+(27,'JavaScript Basics','https://www.youtube.com/watch?v=W6NZfCO5SIk',22),
+(28,'Responsive Design','https://www.youtube.com/watch?v=srvUrASNj0s',25),
+
+-- Data Structures course
+(31,'Arrays Explained','https://www.youtube.com/watch?v=6w3L4Y1PI5M',20),
+(32,'Linked Lists','hhttps://www.youtube.com/watch?v=6w3L4Y1PI5M',18),
+(33,'Stacks and Queues','https://www.youtube.com/watch?v=wjI1WNcIntg',22),
+(34,'Trees Introduction','https://www.youtube.com/watch?v=oSWT8gNZ5oA',25),
+
+-- AI ML course
+(37,'Sorting & Searching Algorithms','https://www.youtube.com/watch?v=ZZuD6iUe3Pc',20),
+(38,'What is AI & ML?','https://www.youtube.com/watch?v=ukzFI9rgwfU',18),
+(39,'Data Preprocessing in ML','https://www.youtube.com/watch?v=0xVqLJe9_CY',22),
+(40,'Supervised Learning Explained,Model Evaluation','https://www.youtube.com/watch?v=85dtiMz9tSo',25);
+
+
+-- updating the video progress table 
+
+INSERT IGNORE INTO Video_Progress
+(user_id, video_id, completed, completed_at)
+SELECT
+u.user_id,
+v.video_id,
+IF(RAND() > 0.4, TRUE, FALSE),
+NOW()
+FROM User u
+JOIN Video v
+WHERE u.role='STUDENT'
+LIMIT 60;
+
+
