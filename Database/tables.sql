@@ -36,7 +36,7 @@ CREATE TABLE Module (
 );
 
 -- vedio table 
-CREATE TABLE Video (
+CREATE TABLE Lesson (
     video_id INT AUTO_INCREMENT PRIMARY KEY,
     module_id INT NOT NULL,
     video_title VARCHAR(255) NOT NULL,
@@ -161,9 +161,13 @@ ADD CONSTRAINT fk_project_admin
 FOREIGN KEY (approved_by)
 REFERENCES User(user_id);
 
-ALTER TABLE Project_Submission
-ADD CONSTRAINT unique_submission
-UNIQUE(user_id,module_id);
+ALTER TABLE Video_Progress
+ADD CONSTRAINT check_completed
+CHECK (completed IN (0,1));
+
+
+DESCRIBE Video_Progress;
+
 
 
 -- Trigger option (cirtificates automattically treiggers)
