@@ -253,7 +253,7 @@ VALUES
 
 -- Data Structures course
 (31,'Arrays Explained','https://www.youtube.com/watch?v=6w3L4Y1PI5M',20),
-(32,'Linked Lists','hhttps://www.youtube.com/watch?v=6w3L4Y1PI5M',18),
+(32,'Linked Lists','https://www.youtube.com/watch?v=6w3L4Y1PI5M',18),
 (33,'Stacks and Queues','https://www.youtube.com/watch?v=wjI1WNcIntg',22),
 (34,'Trees Introduction','https://www.youtube.com/watch?v=oSWT8gNZ5oA',25),
 
@@ -263,9 +263,7 @@ VALUES
 (39,'Data Preprocessing in ML','https://www.youtube.com/watch?v=0xVqLJe9_CY',22),
 (40,'Supervised Learning Explained,Model Evaluation','https://www.youtube.com/watch?v=85dtiMz9tSo',25);
 
-
 -- updating the video progress table 
-
 INSERT IGNORE INTO Video_Progress
 (user_id, video_id, completed, completed_at)
 SELECT
@@ -277,5 +275,3 @@ FROM User u
 JOIN Video v
 WHERE u.role='STUDENT'
 LIMIT 60;
-
-

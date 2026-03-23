@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Projects - LMS Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="admin.html" class="brand">
+            <i class="fa-solid fa-graduation-cap brand-icon"></i>
+            <span>LMS Admin</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="admin.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="students.html" class="nav-item"><i class="fa-solid fa-users"></i> Students</a></li>
+            <li><a href="courses.html" class="nav-item"><i class="fa-solid fa-book"></i> Courses</a></li>
+            <li><a href="projects.html" class="nav-item active"><i class="fa-solid fa-file-code"></i> Projects</a></li>
+            <li><a href="/admin/invitations" class="nav-item"><i class="fa-solid fa-envelope-open-text"></i> Invitations</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="animate-fade-in">
+            <h1 class="page-title">Project Submissions Verification</h1>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=System+Admin&background=4318FF&color=fff" alt="Admin">
+            </div>
+        </header>
+
+        <section class="table-container animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="table-header">
+                <h2>Pending & Reviewed Submissions</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Module / Course</th>
+                        <th>GitHub Link</th>
+                        <th>Date Submitted</th>
+                        <th>Status</th>
+                        <th>Certificate</th>
+                        <th>Verification Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td>{{ project.student_name }}</td>
+                        <td>{{ project.module_title }} / {{ project.course_title }}</td>
+                        <td><a href="{{ project.github_link }}" target="_blank" style="color:var(--primary); text-decoration: none; font-weight: 600;">View Repository <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.8rem; margin-left:4px;"></i></a></td>
+                        <td>{{ project.submitted_date }}</td>
+                        <td><span class="badge badge-{% if project.status == 'APPROVED' %}approved{% elif project.status == 'PENDING' %}pending{% else %}rejected{% endif %}">{{ project.status|title }}</span></td>
+                        {% if project.certificate_code %}
+                            <td><span style="font-family: monospace; font-weight: 600; color: var(--primary);">{{ project.certificate_code }}</span></td>
+                        {% else %}
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">N/A</td>
+                        {% endif %}
+                        {% if project.status == 'PENDING' %}
+                        <td>
+                            <button class="btn btn-verify" onclick="verifyProject(this, 'verify', {{ project.user_id }}, {{ project.module_id }})"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button class="btn btn-reject" onclick="verifyProject(this, 'reject', {{ project.user_id }}, {{ project.module_id }})"><i class="fa-solid fa-xmark"></i> Reject</button>
+                        </td>
+                        {% else %}
+                        <td style="color: var(--text-muted); font-style: italic; font-weight: 500;">Reviewed by Admin</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        function verifyProject(buttonElement, action, userId, moduleId) {
+            const tableRow = buttonElement.closest('tr');
+            const statusCell = tableRow.querySelector('.badge');
+            const actionCell = buttonElement.parentElement;
+            const certCell = actionCell.previousElementSibling;
+
+            // Optimistic loading
+            if (action === 'verify') {
+                certCell.innerHTML = '<span style="font-family: monospace; font-weight: 600; color: var(--success);"><i class="fa-solid fa-spinner fa-spin"></i> Generating...</span>';
+            }
+
+            fetch('/verify_project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, module_id: moduleId, action: action })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.status === 'APPROVED') {
+                        statusCell.className = 'badge badge-approved';
+                        statusCell.textContent = 'Approved';
+                        if (data.certificate_code) {
+                            certCell.innerHTML = `<span style="font-family: monospace; font-weight: 600; color: var(--primary);">${data.certificate_code}</span>`;
+                        } else {
+                            certCell.innerHTML = '<span style="color: var(--danger); font-size: 0.85rem;">Failed</span>';
+                        }
+                    } else {
+                        statusCell.className = 'badge badge-rejected';
+                        statusCell.textContent = 'Rejected';
+                        certCell.innerHTML = '<span style="color: var(--danger); font-size: 0.85rem;">Revoked</span>';
+                    }
+                    
+                    // visually update the UI to show it's reviewed.
+                    actionCell.innerHTML = '<span style="color: var(--text-muted); font-style: italic; font-weight: 500;">Reviewed by Admin</span>';
+                } else {
+                    alert("Database Error: " + data.error);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Network verification error.");
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="admin.html" class="brand">
+            <i class="fa-solid fa-graduation-cap brand-icon"></i>
+            <span>LMS Admin</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="admin.html" class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="students.html" class="nav-item"><i class="fa-solid fa-users"></i> Students</a></li>
+            <li><a href="courses.html" class="nav-item"><i class="fa-solid fa-book"></i> Courses</a></li>
+            <li><a href="projects.html" class="nav-item"><i class="fa-solid fa-file-code"></i> Projects</a></li>
+            <li><a href="/admin/invitations" class="nav-item"><i class="fa-solid fa-envelope-open-text"></i> Invitations</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="animate-fade-in">
+            <h1 class="page-title">Dashboard Overview</h1>
+            <div class="user-profile">
+                <div style="text-align: right;">
+                    <div style="font-weight: 600; color: var(--text-main);">System Admin</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">admin@lms.com</div>
+                </div>
+                <img src="https://ui-avatars.com/api/?name=System+Admin&background=4318FF&color=fff" alt="Admin">
+            </div>
+        </header>
+
+        <section class="stats-grid animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="stat-card">
+                <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-details">
+                    <h3>Total Students</h3>
+                    <p>{{ total_students }}</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-green"><i class="fa-solid fa-book-open"></i></div>
+                <div class="stat-details">
+                    <h3>Total Enrollments</h3>
+                    <p>{{ total_enrollment }}</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-orange"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="stat-details">
+                    <h3>Pending Projects</h3>
+                    <p>{{ total_pending }}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="animate-fade-in" style="animation-delay: 0.2s; margin-bottom: 2.5rem; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <h2 style="margin-bottom: 1.5rem;">Enrollment Growth</h2>
+            <canvas id="enrollmentChart" style="max-height: 300px;"></canvas>
+        </section>
+
+        {% if pending_invites %}
+        <div class="table-header animate-fade-in" style="animation-delay: 0.4s;">
+            <h2>Course Invitations</h2>
+            <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #b48509;">{{ pending_invites|length }} Pending</span>
+        </div>
+        <section class="table-container animate-fade-in" style="animation-delay: 0.45s; margin-bottom: 2.5rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Requested Course</th>
+                        <th>Request Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invite in pending_invites %}
+                    <tr>
+                        <td>{{ invite.student_name }}</td>
+                        <td>{{ invite.course_title }}</td>
+                        <td>{{ invite.enrolled_date }}</td>
+                        <td>
+                            <form action="/approve_enrollment" method="POST" style="display: inline;">
+                                <input type="hidden" name="enrollment_id" value="{{ invite.enrollment_id }}">
+                                <button type="submit" class="btn btn-verify" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;"><i class="fa-solid fa-check"></i> Accept Request</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        {% endif %}
+
+        <section class="table-container animate-fade-in" style="animation-delay: 0.5s;">
+            <div class="table-header">
+                <h2>Recent Enrollments</h2>
+                <a href="students.html" class="btn btn-primary">View All</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Course</th>
+                        <th>Enrollment Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enroll in recent_enrollments %}
+                    <tr>
+                        <td>{{ enroll.student_name }}</td>
+                        <td>{{ enroll.course_title }}</td>
+                        <td>{{ enroll.enrolled_date }}</td>
+                        <td><span class="badge badge-approved">Active</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('enrollmentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ labels|tojson }},
+                    datasets: [{
+                        label: 'New Enrollments',
+                        data: {{ data|tojson }},
+                        borderColor: '#4318FF',
+                        backgroundColor: 'rgba(67, 24, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        </script>
+    </main>
+</body>
+</html>

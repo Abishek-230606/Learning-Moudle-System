@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Invitations - LMS Admin</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="/admin.html" class="brand">
+            <i class="fa-solid fa-graduation-cap brand-icon"></i>
+            <span>LMS Admin</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/admin.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="/students.html" class="nav-item"><i class="fa-solid fa-users"></i> Students</a></li>
+            <li><a href="/courses.html" class="nav-item"><i class="fa-solid fa-book"></i> Courses</a></li>
+            <li><a href="/projects.html" class="nav-item"><i class="fa-solid fa-file-code"></i> Projects</a></li>
+            <li><a href="/admin/invitations" class="nav-item active"><i class="fa-solid fa-envelope-open-text"></i> Invitations</a></li>
+            <li><a href="/logout" class="nav-item" style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+            <header>
+                    <h1 class="page-title">Course Enrollment Invitations</h1>
+            </header>
+
+            <section class="table-container">
+                <div class="table-header">
+                    <h2>Pending Requests ({{ pending_invites|length }})</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Requested Course</th>
+                            <th>Request Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invite in pending_invites %}
+                        <tr>
+                            <td>{{ invite.student_name }}</td>
+                            <td>{{ invite.course_title }}</td>
+                            <td>{{ invite.enrolled_date }}</td>
+                            <td>
+                                <form action="/approve_enrollment" method="POST" style="display: inline;">
+                                    <input type="hidden" name="enrollment_id" value="{{ invite.enrollment_id }}">
+                                    <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;">
+                                        <i class="fa-solid fa-check"></i> Accept Request
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                <i class="fa-solid fa-circle-info" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                                No pending course invitations at the moment.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+    </main>
+</body>
+</html>

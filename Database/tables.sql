@@ -36,7 +36,7 @@ CREATE TABLE Module (
 );
 
 -- vedio table 
-CREATE TABLE Lesson (
+CREATE TABLE Video (
     video_id INT AUTO_INCREMENT PRIMARY KEY,
     module_id INT NOT NULL,
     video_title VARCHAR(255) NOT NULL,
@@ -178,7 +178,7 @@ AFTER UPDATE ON Project_Submission
 FOR EACH ROW
 BEGIN
 
-IF NEW.status = 'APPROVED' THEN
+IF NEW.status = 'APPROVED' AND OLD.status != 'APPROVED' THEN
 
 INSERT INTO Certificate(user_id,course_id,certificate_code)
 VALUES

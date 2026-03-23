@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students - LMS Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="admin.html" class="brand">
+            <i class="fa-solid fa-graduation-cap brand-icon"></i>
+            <span>LMS Admin</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="admin.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="students.html" class="nav-item active"><i class="fa-solid fa-users"></i> Students</a></li>
+            <li><a href="courses.html" class="nav-item"><i class="fa-solid fa-book"></i> Courses</a></li>
+            <li><a href="projects.html" class="nav-item"><i class="fa-solid fa-file-code"></i> Projects</a></li>
+            <li><a href="/admin/invitations" class="nav-item"><i class="fa-solid fa-envelope-open-text"></i> Invitations</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="animate-fade-in">
+            <h1 class="page-title">Manage Students</h1>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=System+Admin&background=4318FF&color=fff" alt="Admin">
+            </div>
+        </header>
+
+        <section class="table-container animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="table-header">
+                <h2>All Registered Students</h2>
+                <button class="btn btn-primary" onclick="openModal('addStudentModal')">
+                    <i class="fa-solid fa-plus"></i> Add Student
+                </button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.email }}</td>
+                        <td><a href="/admin/student/{{ student.user_id }}" class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">View Profile</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Add Student Modal -->
+    <div class="modal" id="addStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Student</h2>
+                <button class="modal-close" onclick="closeModal('addStudentModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="addStudentForm" method="POST" action="/add_student">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" name="name" id="name" placeholder="Enter student name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" name="email" id="email" placeholder="student@example.com" required>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" placeholder="Temporary password" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="course_id">Enroll Course</label>
+                        <select name="course_id" id="course_id">
+                            <option value="">-- No Course --</option>
+                            {% for course in courses %}
+                            <option value="{{ course.course_id }}">{{ course.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">Save Student</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+    </script>
+</body>
+</html>

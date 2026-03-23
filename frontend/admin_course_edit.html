@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Course: {{ course.title }}</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="/admin.html" class="brand">
+            <i class="fa-solid fa-graduation-cap brand-icon"></i>
+            <span>LMS Admin</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/admin.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="/students.html" class="nav-item"><i class="fa-solid fa-users"></i> Students</a></li>
+            <li><a href="/courses.html" class="nav-item active"><i class="fa-solid fa-book"></i> Courses</a></li>
+            <li><a href="/projects.html" class="nav-item"><i class="fa-solid fa-file-code"></i> Projects</a></li>
+            <li><a href="/admin/invitations" class="nav-item"><i class="fa-solid fa-envelope-open-text"></i> Invitations</a></li>
+            <li><a href="/logout" class="nav-item" style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1 class="page-title">Course Editor: {{ course.title }}</h1>
+            <a href="/courses.html" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Back to Courses</a>
+        </header>
+
+        {% if success %}
+        <div style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+            <i class="fa-solid fa-circle-check"></i> {{ success }}
+        </div>
+        {% endif %}
+
+        <section class="table-container">
+            <div class="table-header">
+                <h2>Course Modules</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Module Title</th><th>Type</th><th>Current Content</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    {% for mod in modules %}
+                    <tr>
+                        <td>{{ mod.title }}</td>
+                        <td><span class="badge badge-pending">{{ mod.module_type }}</span></td>
+                        <td>
+                            {% if mod.module_type == 'VIDEO' %}
+                                URL: <a href="{{ mod.video_url }}" target="_blank" style="color: var(--primary);">Link</a>
+                            {% elif mod.module_type == 'QUIZ' %}
+                                Total Questions: {{ mod.q_count }}
+                            {% else %}
+                                Project Module
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if mod.module_type == 'VIDEO' %}
+                            <form action="/admin/update_video" method="POST" style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="hidden" name="video_id" value="{{ mod.video_id }}">
+                                <input type="hidden" name="course_id" value="{{ course.course_id }}">
+                                <input type="url" name="video_url" value="{{ mod.video_url }}" required style="padding: 0.4rem; border: 1px solid #ddd; border-radius: 4px; width: 250px;">
+                                <button type="submit" class="btn btn-primary" style="padding: 0.4rem 0.8rem;"><i class="fa-solid fa-save"></i> Save</button>
+                            </form>
+                            {% elif mod.module_type == 'QUIZ' %}
+                            <button class="btn btn-outline" style="padding: 0.4rem 0.8rem;" onclick="alert('Question Editor coming in next update!')"><i class="fa-solid fa-list-check"></i> Manage Questions</button>
+                            {% else %}
+                            <span style="color: #ecc;">None Needed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

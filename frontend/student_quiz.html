@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ quiz.quiz_title }} - Quiz</title>
+    <link rel="stylesheet" href="/student_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .quiz-option { margin-bottom: 1rem; background: var(--bg-light); padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; gap: 1rem; }
+        .quiz-option:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .quiz-option input { transform: scale(1.3); }
+        .question-card { margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <div style="max-width: 800px; margin: 3rem auto; padding: 0 1.5rem;">
+        <a href="/course/{{ course_id }}" style="color: var(--text-muted); text-decoration: none; display: inline-block; margin-bottom: 2rem;"><i class="fa-solid fa-arrow-left"></i> Back to Course</a>
+        
+        <div class="table-container animate-fade-in" style="padding: 2.5rem;">
+            <h1 style="color: var(--text-dark); margin-bottom: 0.5rem; font-size: 1.8rem;">{{ quiz.quiz_title }}</h1>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem;">Pass Marks: {{ quiz.pass_marks }} | Total Questions: {{ questions|length }}</p>
+
+            <form action="/submit_quiz" method="POST">
+                <input type="hidden" name="course_id" value="{{ course_id }}">
+                <input type="hidden" name="quiz_id" value="{{ quiz.quiz_id }}">
+                
+                {% for q in questions %}
+                <div class="question-card">
+                    <h3 style="margin-bottom: 1rem; color: var(--text-dark);">{{ loop.index }}. {{ q.question_text }}</h3>
+                    
+                    <label class="quiz-option">
+                        <input type="radio" name="q_{{ q.question_id }}" value="A" required> {{ q.option_a }}
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q_{{ q.question_id }}" value="B"> {{ q.option_b }}
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q_{{ q.question_id }}" value="C"> {{ q.option_c }}
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q_{{ q.question_id }}" value="D"> {{ q.option_d }}
+                    </label>
+                </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem; font-size: 1.1rem; margin-top: 1rem;"><i class="fa-solid fa-paper-plane"></i> Submit Quiz Responses</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

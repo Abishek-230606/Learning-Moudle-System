@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.title }} - Course Preview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #f6f0e5;
+            --surface: #fffaf3;
+            --ink: #17253f;
+            --muted: #5b6883;
+            --line: rgba(23, 37, 63, 0.12);
+            --accent: #df6d2d;
+            --accent-dark: #bb5320;
+            --secondary: #0f766e;
+            --soft: #fff0e4;
+            --shadow: 0 30px 60px rgba(23, 37, 63, 0.12);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 24%),
+                radial-gradient(circle at left, rgba(223, 109, 45, 0.12), transparent 24%),
+                var(--bg);
+        }
+        .shell { width: min(1160px, calc(100% - 2rem)); margin: 0 auto; padding: 1.25rem 0 3rem; }
+        .topbar, .hero, .columns { display: grid; gap: 1.4rem; }
+        .topbar {
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+        .crumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: 700;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            padding: 0.95rem 1.35rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-outline { background: rgba(255,255,255,0.55); border-color: var(--line); color: var(--ink); }
+        .hero {
+            padding: 2rem;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #17253f 0%, #23426b 55%, #0f766e 100%);
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+        .hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .pill {
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.14);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 800;
+        }
+        .hero h1 {
+            font-size: clamp(2.4rem, 4vw, 4rem);
+            letter-spacing: -0.05em;
+            margin: 0.8rem 0 0.9rem;
+        }
+        .hero p {
+            max-width: 62ch;
+            line-height: 1.75;
+            color: rgba(255,255,255,0.84);
+        }
+        .hero-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.2rem;
+            color: rgba(255,255,255,0.86);
+        }
+        .hero-meta span {
+            padding: 0.7rem 0.9rem;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.1);
+        }
+        .columns {
+            grid-template-columns: 1.1fr 0.9fr;
+            align-items: start;
+            margin-top: 1.6rem;
+        }
+        .panel {
+            background: rgba(255,250,243,0.86);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            padding: 1.7rem;
+        }
+        .panel h2 {
+            font-size: 1.45rem;
+            letter-spacing: -0.04em;
+            margin-bottom: 1rem;
+        }
+        .module-list {
+            display: grid;
+            gap: 0.9rem;
+        }
+        .module-item {
+            border: 1px solid var(--line);
+            background: #fffdf8;
+            border-radius: 20px;
+            padding: 1rem 1.05rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .module-item small {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 800;
+        }
+        .type {
+            white-space: nowrap;
+            padding: 0.42rem 0.7rem;
+            border-radius: 999px;
+            background: var(--soft);
+            color: var(--accent-dark);
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+        .panel p, .hint { color: var(--muted); line-height: 1.7; }
+        .error {
+            background: rgba(220, 38, 38, 0.08);
+            border: 1px solid rgba(220, 38, 38, 0.18);
+            color: #b91c1c;
+            border-radius: 18px;
+            padding: 0.95rem 1rem;
+            margin-bottom: 1rem;
+        }
+        .field { margin-bottom: 1rem; }
+        .field label {
+            display: block;
+            margin-bottom: 0.45rem;
+            font-weight: 700;
+            color: var(--muted);
+        }
+        .field input {
+            width: 100%;
+            padding: 0.95rem 1rem;
+            border-radius: 16px;
+            border: 1px solid var(--line);
+            background: #fff;
+            font: inherit;
+        }
+        .field input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+        }
+        .note {
+            margin-top: 0.9rem;
+            font-size: 0.92rem;
+            color: var(--muted);
+        }
+        @media (max-width: 900px) {
+            .columns { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+            .topbar { grid-template-columns: 1fr; }
+            .hero { padding: 1.4rem; }
+            .module-item { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="topbar">
+            <a href="/" class="crumb"><i class="fa-solid fa-arrow-left"></i> Back to LMS Dashboard</a>
+            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                <a href="/login" class="btn btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+                <a href="/admin_login" class="btn btn-outline"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+            </div>
+        </div>
+
+        <section class="hero">
+            <div class="hero-top">
+                <span class="pill">{{ course.level }}</span>
+                <span class="pill"><i class="fa-solid fa-clock"></i> {{ course.duration }} Hours</span>
+            </div>
+            <h1>{{ course.title }}</h1>
+            <p>{{ course.description }}</p>
+            <div class="hero-meta">
+                <span><i class="fa-solid fa-layer-group"></i> {{ modules|length }} structured modules</span>
+                <span><i class="fa-solid fa-envelope-open-text"></i> Approval required before learning access</span>
+            </div>
+        </section>
+
+        <section class="columns">
+            <article class="panel">
+                <h2>Course Content Preview</h2>
+                <p class="hint">Learners can inspect the structure before applying. Actual course content is only unlocked after admin approval.</p>
+                <div class="module-list" style="margin-top: 1.2rem;">
+                    {% for module in modules %}
+                    <div class="module-item">
+                        <div>
+                            <small>Module {{ module.module_order }}</small>
+                            <strong>{{ module.module_title }}</strong>
+                        </div>
+                        <span class="type">{{ module.module_type }}</span>
+                    </div>
+                    {% else %}
+                    <div class="module-item">
+                        <div>
+                            <small>Coming Soon</small>
+                            <strong>Modules will appear here once the course structure is published.</strong>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <aside class="panel">
+                <h2>Apply For This Course</h2>
+                <p class="hint" style="margin-bottom: 1rem;">Enter your details to create your learner account and send a join request to the admin.</p>
+
+                {% if error %}
+                <div class="error">{{ error }}</div>
+                {% endif %}
+
+                <form action="/apply/{{ course.course_id }}" method="POST">
+                    <div class="field">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" value="{{ form_data.get('name', '') }}" placeholder="Your name" required>
+                    </div>
+                    <div class="field">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" value="{{ form_data.get('email', '') }}" placeholder="you@example.com" required>
+                    </div>
+                    <div class="field">
+                        <label for="password">Create Password</label>
+                        <input type="password" id="password" name="password" placeholder="Create a password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-paper-plane"></i> Send Join Request</button>
+                </form>
+
+                <p class="note">After the admin accepts your request, you can use the login page to access the course content.</p>
+            </aside>
+        </section>
+    </div>
+</body>
+</html>

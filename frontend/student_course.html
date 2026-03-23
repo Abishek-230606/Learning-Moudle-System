@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.title }} - LMS</title>
+    <link rel="stylesheet" href="/student_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="/dashboard" class="brand" style="text-decoration: none;">
+            <i class="fa-solid fa-arrow-left brand-icon"></i>
+            <span>Dashboard</span>
+        </a>
+        <br><br>
+        <h4 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; margin: 0 1rem 1rem;">Course Modules</h4>
+        <ul class="nav-links">
+            {% for mod in modules %}
+            <li><a href="#module-{{ mod.module_id }}" class="nav-item"><i class="fa-solid {% if mod.module_type == 'VIDEO' %}fa-play-circle{% elif mod.module_type == 'PROJECT' %}fa-code{% else %}fa-clipboard-question{% endif %}"></i> {{ mod.module_title }}</a></li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="animate-fade-in">
+            <h1 class="page-title">{{ course.title }}</h1>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name={{ session['name'] }}&background=01B574&color=fff" alt="User">
+            </div>
+        </header>
+
+        {% if error_msg %}
+        <div style="background: rgba(255, 74, 74, 0.1); color: var(--danger); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">{{ error_msg }}</div>
+        {% endif %}
+        {% if success_msg %}
+        <div style="background: rgba(1, 181, 116, 0.1); color: var(--success); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">{{ success_msg }}</div>
+        {% endif %}
+
+        {% for mod in modules %}
+        <section id="module-{{ mod.module_id }}" class="table-container animate-fade-in" style="padding: 2rem; margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1rem; color: var(--text-dark);">Module {{ mod.module_order }}: {{ mod.module_title }}</h2>
+            
+            {% if mod.module_type == 'VIDEO' %}
+                {% if mod.video_url %}
+                <p style="color: var(--text-muted); margin-bottom: 1rem;"><i class="fa-solid fa-clock"></i> {{ mod.duration_minutes }} Minutes</p>
+                
+                <div style="margin-bottom: 1.5rem; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--border);">
+                    <iframe width="100%" height="450" src="{{ mod.embed_url }}" title="Course Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display: block;"></iframe>
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    
+                    {% if not mod.video_completed %}
+                    <form action="/mark_complete" method="POST">
+                        <input type="hidden" name="course_id" value="{{ course.course_id }}">
+                        <input type="hidden" name="video_id" value="{{ mod.video_id }}">
+                        <button type="submit" class="btn btn-outline" style="color: var(--text-main);"><i class="fa-solid fa-check"></i> Mark Complete</button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-success" disabled style="opacity: 0.8; cursor: default;"><i class="fa-solid fa-circle-check"></i> Completed</button>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted);">Video is being prepared.</p>
+                {% endif %}
+                
+            {% elif mod.module_type == 'PROJECT' %}
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Submit your GitHub repository link to be reviewed by an instructor. Once approved, you will earn your certificate for this course!</p>
+                
+                {% if mod.project_status == 'APPROVED' %}
+                    <div style="padding: 1rem; border: 1px solid var(--success); background: rgba(1, 181, 116, 0.05); border-radius: 8px; color: var(--success); font-weight: 500;">
+                        <i class="fa-solid fa-circle-check"></i> Your project has been approved!
+                    </div>
+                {% elif mod.project_status == 'PENDING' %}
+                    <div style="padding: 1rem; border: 1px solid var(--warning); background: rgba(255, 206, 32, 0.05); border-radius: 8px; color: #a68400; font-weight: 500;">
+                        <i class="fa-solid fa-clock"></i> Your project is currently pending review by an admin.
+                    </div>
+                {% else %}
+                    <form action="/submit_project" method="POST" style="display: flex; gap: 1rem; align-items: center;">
+                        <input type="hidden" name="course_id" value="{{ course.course_id }}">
+                        <input type="hidden" name="module_id" value="{{ mod.module_id }}">
+                        <input type="url" name="github_link" placeholder="https://github.com/..." required style="flex: 1; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit;">
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Project</button>
+                    </form>
+                {% endif %}
+                
+            {% elif mod.module_type == 'QUIZ' %}
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Test your knowledge on this module. You must pass the quiz to proceed.</p>
+                <a href="/quiz/{{ mod.module_id }}" class="btn" style="background: var(--warning); color: #fff; text-decoration: none;"><i class="fa-solid fa-pencil"></i> Attempt Quiz</a>
+            {% endif %}
+            
+        </section>
+        {% endfor %}
+    </main>
+</body>
+</html>

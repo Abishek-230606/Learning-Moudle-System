@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - LMS</title>
+    <link rel="stylesheet" href="student_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--bg-dark); margin: 0; }
+        .login-card { background: var(--bg-card); backdrop-filter: var(--glass-blur); border: 1px solid var(--border); padding: 3rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); width: 100%; max-width: 400px; text-align: center; }
+        .login-header h1 { margin: 0 0 0.5rem 0; color: var(--text-main); font-size: 2rem; }
+        .login-header p { color: var(--text-muted); margin-bottom: 2rem; }
+        .error-msg { background: rgba(255, 74, 74, 0.1); color: var(--danger); padding: 0.8rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid rgba(239,68,68,0.2); }
+    </style>
+</head>
+<body>
+    <div class="login-card animate-fade-in" style="border-top: 3px solid var(--warning);">
+        <div class="login-header">
+            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
+            <h1>Admin Gateway</h1>
+            <p>Access your management console</p>
+        </div>
+        
+        {% if error %}
+        <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form action="/admin_login" method="POST" style="text-align: left;">
+            <div class="form-group">
+                <label for="email">Admin Email</label>
+                <input type="email" name="email" id="email" placeholder="admin@lms.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 1rem; background: var(--warning); padding: 1rem; color: white;">Authenticate <i class="fa-solid fa-lock-open"></i></button>
+        </form>
+        <div style="margin-top: 2rem;">
+            <a href="/login" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;"><i class="fa-solid fa-arrow-left"></i> Return to Student Login</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Module System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #f5efe4;
+            --surface: rgba(255, 250, 243, 0.88);
+            --panel: #fffaf3;
+            --ink: #18243d;
+            --muted: #5b6883;
+            --line: rgba(24, 36, 61, 0.12);
+            --accent: #df6d2d;
+            --accent-dark: #bb5320;
+            --accent-soft: #ffe0cf;
+            --highlight: #0f766e;
+            --hero: linear-gradient(135deg, #18243d 0%, #243b63 52%, #2c5872 100%);
+            --shadow: 0 28px 60px rgba(24, 36, 61, 0.12);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(223, 109, 45, 0.12), transparent 28%),
+                radial-gradient(circle at 85% 15%, rgba(15, 118, 110, 0.14), transparent 22%),
+                var(--bg);
+        }
+        a { color: inherit; }
+        .shell { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.4rem 0;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.85rem;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.03em;
+        }
+        .brand-mark {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: var(--hero);
+            color: #fff;
+            box-shadow: 0 14px 28px rgba(36, 59, 99, 0.24);
+        }
+        .nav-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.85rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.95rem 1.35rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 16px 32px rgba(223, 109, 45, 0.22);
+        }
+        .btn-primary:hover { background: var(--accent-dark); }
+        .btn-outline {
+            border-color: var(--line);
+            background: rgba(255,255,255,0.45);
+        }
+        .hero {
+            margin: 0.5rem 0 2rem;
+            border-radius: 34px;
+            overflow: hidden;
+            background: var(--hero);
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr;
+            gap: 2rem;
+            padding: 4.2rem;
+            align-items: center;
+        }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.05em;
+            max-width: 10ch;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.05rem;
+            color: rgba(255,255,255,0.82);
+            line-height: 1.7;
+            max-width: 56ch;
+            margin-bottom: 1.75rem;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 1.35rem;
+        }
+        .stat-card strong {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.04em;
+        }
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 1rem;
+            margin: 2.5rem 0 1rem;
+        }
+        .section-head h2 {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            letter-spacing: -0.04em;
+        }
+        .section-head p {
+            color: var(--muted);
+            max-width: 48ch;
+            line-height: 1.65;
+        }
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.4rem;
+            padding-bottom: 4rem;
+        }
+        .course-card {
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+        .course-visual {
+            min-height: 170px;
+            padding: 1.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            color: #fff;
+            background: linear-gradient(135deg, #1d3557 0%, #0f766e 100%);
+        }
+        .course-card:nth-child(2n) .course-visual {
+            background: linear-gradient(135deg, #7c2d12 0%, #df6d2d 100%);
+        }
+        .course-card:nth-child(3n) .course-visual {
+            background: linear-gradient(135deg, #264653 0%, #2a9d8f 100%);
+        }
+        .course-level {
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.16);
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .course-modules {
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.12);
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+        }
+        .course-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.9rem; flex: 1; }
+        .course-body h3 { font-size: 1.45rem; letter-spacing: -0.04em; }
+        .course-body p { color: var(--muted); line-height: 1.65; }
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+        .footer-note {
+            border-top: 1px solid var(--line);
+            padding: 1.4rem 0 2rem;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 920px) {
+            .hero-grid { grid-template-columns: 1fr; padding: 2rem; }
+            .stats { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+            .topbar, .section-head, .footer-note { flex-direction: column; align-items: flex-start; }
+            .hero h1 { max-width: none; }
+            .shell { width: min(100% - 1rem, 1180px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <header class="topbar">
+            <a href="/" class="brand">
+                <span class="brand-mark"><i class="fa-solid fa-layer-group"></i></span>
+                <span>Learning Module System</span>
+            </a>
+            <div class="nav-actions">
+                <a href="/login" class="btn btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+                <a href="/admin_login" class="btn btn-outline"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="hero-grid">
+                <div>
+                    <span class="eyebrow"><i class="fa-solid fa-compass"></i> Explore before you apply</span>
+                    <h1>See the LMS like a learner first.</h1>
+                    <p>
+                        Browse the full course catalog, open any course to preview its learning path,
+                        and send a join request with your details. Once the admin approves it, you can
+                        log in and start learning right away.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#catalog" class="btn btn-primary"><i class="fa-solid fa-book-open-reader"></i> Browse Courses</a>
+                        <a href="/login" class="btn btn-outline"><i class="fa-solid fa-user-graduate"></i> Student Login</a>
+                    </div>
+                </div>
+                <div class="stats">
+                    <article class="stat-card">
+                        <strong>{{ total_courses }}</strong>
+                        <span>Courses ready to explore</span>
+                    </article>
+                    <article class="stat-card">
+                        <strong>{{ total_students }}</strong>
+                        <span>Students already learning here</span>
+                    </article>
+                    <article class="stat-card">
+                        <strong>{{ total_certificates }}</strong>
+                        <span>Certificates issued so far</span>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="catalog">
+            <div class="section-head">
+                <div>
+                    <h2>Course Catalog</h2>
+                    <p>Every course card opens a full preview page where learners can inspect the module structure and apply for access.</p>
+                </div>
+            </div>
+
+            <div class="course-grid">
+                {% for course in courses %}
+                <article class="course-card">
+                    <div class="course-visual">
+                        <span class="course-level">{{ course.level }}</span>
+                        <span class="course-modules">{{ course.module_count }} Modules</span>
+                    </div>
+                    <div class="course-body">
+                        <h3>{{ course.title }}</h3>
+                        <p>{{ course.description }}</p>
+                        <div class="meta">
+                            <span><i class="fa-solid fa-clock"></i> {{ course.duration }} Hours</span>
+                            <span><i class="fa-solid fa-sitemap"></i> Structured path</span>
+                        </div>
+                        <a href="/catalog/course/{{ course.course_id }}" class="btn btn-primary">View Course <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </article>
+                {% else %}
+                <article class="course-card">
+                    <div class="course-body">
+                        <h3>No courses published yet</h3>
+                        <p>The LMS catalog will appear here as soon as courses are added from the admin area.</p>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <footer class="footer-note">
+            <span>New learners can browse, preview, apply, and then wait for admin approval.</span>
+            <span>Existing learners can use the login button to access their approved courses.</span>
+        </footer>
+    </div>
+</body>
+</html>
