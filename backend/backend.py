@@ -826,5 +826,11 @@ def submit_quiz():
     else:
         return redirect(url_for('view_course', course_id=course_id, error=f"You scored {score}/{total}. You need {pass_marks} to pass. Please try again."))
 
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
+
+
+
